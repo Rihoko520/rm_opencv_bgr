@@ -4,13 +4,16 @@ import adjust  # 导入调试代码
 
 # 设置模式：0 - 处理视频流，1 - 仅运行检测，2 - 实时处理静态图像
 global mode 
-mode = 0  # 0: 处理视频流, 1: 仅运行检测, 2: 实时处理静态图像
+mode = 2  # 0: 处理视频流, 1: 仅运行检测, 2: 实时处理静态图像
 global image_path   
 image_path = './photo/2.jpg'  # 替换为你的图像路径
 global url
 url = "photo/test.mp4"
-
+global val
+val = 45
 def main():
+    global val
+    global image_path 
     if mode == 0:
         # 处理视频流
         video_stream = cv2.VideoCapture(url)
@@ -50,8 +53,6 @@ def main():
             print("错误: 无法打开视频流。")
             return
         
-        adjust.setup_windows()  # 创建滑动条窗口
-        
         while True:
             ret, frame = video_stream.read()
             if not ret:
@@ -59,7 +60,6 @@ def main():
                 break
             
             # 目标检测，传入原图和 val
-            val = adjust.val  # 获取当前的 val 值
             armors_dict = track_armor(frame, val,2)
             
             if armors_dict:
