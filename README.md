@@ -128,7 +128,7 @@ pip install opencv-python numpy
 
 ### 4. 返回结果
 - 返回包含检测到的装甲信息的字典：
-```json
+```dict
 {'526': {'class_id': 7, 'height': 78, 'center': [526, 288]}}
 ```
 
