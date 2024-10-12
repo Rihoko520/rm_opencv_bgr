@@ -139,7 +139,7 @@ pip install opencv-python numpy
 - 返回包含检测到的装甲信息的字典：
 ![armor](./photo/example.jpg)
 ```json
-{'443': {'class_id': 7, 'height': 101, 'center': [443, 364]}, '264': {'class_id': 1, 'height': 31, 'center': [264, 241]}, '366': {'class_id': 1, 'height': 35, 'center': [366, 229]}}
+'443': {'class_id': 7, 'height': 101, 'center': [443, 364]}, '264': {'class_id': 1, 'height': 31, 'center': [264, 241]}, '366': {'class_id': 1, 'height': 35, 'center': [366, 229]}
 ```
 
 
