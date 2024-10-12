@@ -2,16 +2,35 @@ import cv2
 from detector import track_armor
 import adjust  # 导入调试代码
 
-global mode, image_path, url, val
-mode = 1  # 0: 处理视频流, 1: 仅运行检测, 2: 仅运行检测-无图, 3: 实时处理静态图像
-image_path = './photo/2.jpg'  # 替换为你的图像路径
+global mode, image_path, url, val, video
+mode = 1  # 模式设置 0: 视频流调试 1: 仅运行检测 2: 仅运行检测-无图 3: 静态图调试
+video = True # 是否识别视频
 url = "photo/test.mp4"
-val = 35  # 这个val是不用动态修改的时候的
+image_path = './photo/2.jpg'  # 图像路径
+val = 35  # 静态值
+
+
+def get_first_available_camera():
+    """获取第一个可用的摄像头索引"""
+    for i in range(10):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            cap.release()
+            return i
+    return None  # 没有可用摄像头
 
 def main():
     global val
+    camera_index = get_first_available_camera()  # 获取可用摄像头
+    if camera_index is None:
+        print("错误: 没有找到可用的摄像头。")
+        return
+    
+    if video:
+        camera_index = url
+    
     if mode == 0:  # 处理视频流
-        video_stream = cv2.VideoCapture(url)
+        video_stream = cv2.VideoCapture(camera_index)
         if not video_stream.isOpened():
             print("错误: 无法打开视频流。")
             return
@@ -21,19 +40,18 @@ def main():
             if not ret:
                 print("错误: 无法读取帧")
                 break
-            val = adjust.val  # 获取当前的 val 值
             armors_dict = track_armor(frame, val, 2)
             if armors_dict:
                 print(armors_dict)
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                break        
+                break
         video_stream.release()
         cv2.destroyAllWindows()
     
     elif mode in {1, 2}:  # 仅运行检测或仅运行检测-无图
-        video_stream = cv2.VideoCapture(url)
+        video_stream = cv2.VideoCapture(camera_index)  # 使用可用摄像头
         if not video_stream.isOpened():
-            print("错误: 无法打开视频流。")
+            print("错误: 无法打开摄像头。")
             return       
         while True:
             ret, frame = video_stream.read()
@@ -55,7 +73,6 @@ def main():
             return
         adjust.setup_windows()  # 创建滑动条窗口
         while True:
-            val = adjust.val  # 获取当前的 val 值
             armors_dict = track_armor(current_frame, val, 2)
             if armors_dict:
                 print(armors_dict)
