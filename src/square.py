@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw
 
 # 创建图像
 image = Image.new('RGB', (640, 480), 'white')
-side_length = int(7000 ** 0.5)  # 边长为45
+side_length = int(14400 ** 0.5)  # 边长为45
 draw = ImageDraw.Draw(image)
 
 # 计算正方形位置并绘制
