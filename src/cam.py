@@ -16,7 +16,7 @@ def get_first_available_camera():
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
             cap.release()
-            return 1
+            return i
     return None  # 没有可用摄像头
 
 def main():
