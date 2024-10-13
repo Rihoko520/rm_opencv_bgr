@@ -8,15 +8,14 @@ def darker(img):
     darker_image = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)  # 转换回 BGR
     return darker_image
 
-def img_processed(img, val,mode):
+def processed(img, val,mode):
     """处理图像，返回二值图像、调整大小和亮度的图像"""    
     img_resized = cv2.resize(img, (640, 480))  # 调整图像大小
     img_dark = cv2.convertScaleAbs(img_resized, alpha=0.5)  # 调整亮度
     img_darker = darker(img_dark)  # 降低亮度
     img_gray = cv2.cvtColor(img_darker, cv2.COLOR_BGR2GRAY)  # 转为灰度图
     _, img_binary = cv2.threshold(img_gray, val, 255, cv2.THRESH_BINARY)  # 二值化处理
-    # 根据 mode 控制是否显示图像
-    if mode != 3 : 
+    if mode != 3 : # 根据 mode 控制是否显示图像
         cv2.imshow("Binary Image", img_binary)  # 显示二值图像
     return img_dark, img_binary 
 
@@ -47,7 +46,6 @@ def is_coincide(a, b):
 def find_light(img_binary, img, mode):
     """查找图像中的光源并返回旋转矩形。"""
     contours, _ = cv2.findContours(img_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)  # 查找灯条
-    
     # 过滤条件合并为一个列表理解式
     lights_filtered = [
         adjust(cv2.minAreaRect(contour)) for contour in contours 
@@ -87,7 +85,7 @@ def find_light(img_binary, img, mode):
             box = cv2.boxPoints(rect).astype(int)  # 获取轮廓点
             cv2.drawContours(img_drawn, [box], 0, (0, 0, 255), 2)  # 绘制红色轮廓
             cv2.circle(img_drawn, tuple(map(int, rect[0])), 3, (0, 0, 255), -1)  # 绘制红色中心点
-            
+
     return lights_red, lights_blue, img_drawn  # 返回红色和蓝色光源
 
 def is_close(rect1, rect2, light_tol, angle_tol, height_tol, width_tol,cy_tol):
@@ -101,14 +99,14 @@ def is_close(rect1, rect2, light_tol, angle_tol, height_tol, width_tol,cy_tol):
         if angle_diff <= light_tol:  # 判断角度差是否在容忍范围内
             if abs(h1 - h2) <= height_tol and abs(w1 - w2) <= width_tol:  # 判断高宽差
                 line_angle = math.degrees(math.atan2(cy2 - cy1, cx2 - cx1))  # 计算连线角度
-
-                if line_angle > 90:    # 将角度标准化到 -90° 到 90° 之间
+                # 将角度标准化到 -90° 到 90° 之间
+                if line_angle > 90:    
                     line_angle -= 180  # 标准化处理
                 elif line_angle < -90:
                     line_angle += 180  # 标准化处理
-
-                if (abs(line_angle - angle1) <= angle_tol or abs(line_angle - angle2) <= angle_tol or abs(cy1-cy2)<cy_tol):  # 检查是否垂直或者判断中心点垂直坐标差
-                    return True                # 直接判断与旋转矩形的角度接近垂直或者中心点垂直坐标接近
+                # 检查是否垂直或者判断中心点垂直坐标差  
+                if (abs(line_angle - angle1) <= angle_tol or abs(line_angle - angle2) <= angle_tol or abs(cy1-cy2)<cy_tol):  
+                    return True                
     return False
 
 def is_armor(lights, light_tol=5, angle_tol=7, height_tol=10, width_tol=10,cy_tol=5):
@@ -135,13 +133,13 @@ def is_armor(lights, light_tol=5, angle_tol=7, height_tol=10, width_tol=10,cy_to
             points = np.concatenate([cv2.boxPoints(light) for light in light_matched])  # 获取所有矩形的四个顶点
             armor_raw = cv2.minAreaRect(points)  # 计算最小外接矩形
 
-            if 200 <= armor_raw[1][0] * armor_raw[1][1] <= 11000 :
+            if 200 <= armor_raw[1][0] * armor_raw[1][1] <= 11000 : # 限制识别到的装甲板面积大小
                 armor_flit = adjust(armor_raw)
                 if 1 <= armor_flit[1][1] / armor_flit[1][0] <= 3.5:  # 限制识别到的装甲矩形高宽比
                     armor.append(adjust(armor_flit)) # 调整并添加到装甲矩形列表   
     return armor  # 返回装甲信息
 
-def armor_id(img, armors, class_id, mode):
+def id_armor(img, armors, class_id, mode):
     """为装甲矩形标记信息并在图像上绘制轮廓。"""
     armors_dict = {}  # 存储装甲信息的字典
     color_map = {0: (255, 255, 0), 1: (128, 0, 128)}  # 蓝色和红色的颜色映射
@@ -168,7 +166,7 @@ def armor_id(img, armors, class_id, mode):
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (120, 255, 255), 2)  # 在图像上标记坐标
     # 根据 mode 控制是否显示图像
     if mode != 3 : 
-        cv2.imshow("armor", img)  # 显示装甲图像 
+        cv2.imshow("armor", img)  
     return armors_dict  # 返回装甲信息字典
 
 def find_armor(img, lights_red, lights_blue, mode):
@@ -176,19 +174,19 @@ def find_armor(img, lights_red, lights_blue, mode):
     armors_dict, armors_red, armors_blue = {}, [], []  # 初始化装甲字典和列表
     armors_red = is_armor(lights_red)  # 查找红色装甲
     armors_blue = is_armor(lights_blue)  # 查找蓝色装甲
-    armors_dict.update(armor_id(img, armors_red, 1,mode))  # 红色装甲    # 合并红色和蓝色装甲的信息
-    armors_dict.update(armor_id(img, armors_blue, 0,mode))  # 蓝色装甲
+    armors_dict.update(id_armor(img, armors_red, 1,mode))  # 添加红色装甲到列表    
+    armors_dict.update(id_armor(img, armors_blue, 0,mode))  # 添加蓝色装甲到列表
     return armors_dict  # 返回装甲字典
 
 def track_armor(img, val, mode):
     """跟踪装甲并返回装甲字典-识别的主函数"""
-    img_raw, img_binary = img_processed(img, val, mode)  # 处理图像
+    img_raw, img_binary = processed(img, val, mode)  # 处理图像
     lights_red, lights_blue, img_drawn = find_light(img_binary, img_raw, mode)  # 查找光源
     armors_dict = find_armor(img_drawn, lights_red, lights_blue, mode)  # 查找装甲
     return armors_dict  # 返回装甲字典
     
 if __name__ == "__main__":
-    img = cv2.imread('./photo/blue_red.jpg')  # 读取图像
+    img = cv2.imread('./photo/red_2.jpg')  # 读取图像
     val = 35  # 设置阈值
     mode = 2  # 1-red, 0-blue, 2-both 3-no show
     armors_dict = track_armor(img, val, mode)  # 跟踪装甲
