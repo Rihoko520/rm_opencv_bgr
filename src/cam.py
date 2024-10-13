@@ -3,10 +3,10 @@ from detector import track_armor
 import adjust  # 导入调试代码
 
 global mode, image_path, url, val, video
-mode = 1  # 模式设置 0: 视频流调试 1: 仅运行检测 2: 仅运行检测-无图 3: 静态图调试
-video = True # 是否识别视频
+mode = 3  # 模式设置 0: 视频流调试 1: 仅运行检测 2: 仅运行检测-无图 3: 静态图调试
+video = False # 是否识别视频
 url = "photo/test.mp4"
-image_path = './photo/2.jpg'  # 图像路径
+image_path = './photo/red_2.jpg'  # 图像路径
 val = 35  # 静态值
 
 
@@ -16,7 +16,7 @@ def get_first_available_camera():
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
             cap.release()
-            return i
+            return 1
     return None  # 没有可用摄像头
 
 def main():
@@ -40,7 +40,8 @@ def main():
             if not ret:
                 print("错误: 无法读取帧")
                 break
-            armors_dict = track_armor(frame, val, 2)
+            current_val = cv2.getTrackbarPos('Threshold', 'Threshold')
+            armors_dict = track_armor(frame, current_val, 2)
             if armors_dict:
                 print(armors_dict)
             if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -73,7 +74,8 @@ def main():
             return
         adjust.setup_windows()  # 创建滑动条窗口
         while True:
-            armors_dict = track_armor(current_frame, val, 2)
+            current_val = cv2.getTrackbarPos('Threshold', 'Threshold')
+            armors_dict = track_armor(current_frame, current_val, 2)
             if armors_dict:
                 print(armors_dict)
             if cv2.waitKey(1) & 0xFF == ord('q'):
