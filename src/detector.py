@@ -188,7 +188,7 @@ def track_armor(img, val, mode):
     return armors_dict  # 返回装甲字典
     
 if __name__ == "__main__":
-    img = cv2.imread('./photo/2.jpg')  # 读取图像
+    img = cv2.imread('./photo/blue_red.jpg')  # 读取图像
     val = 35  # 设置阈值
     mode = 2  # 1-red, 0-blue, 2-both 3-no show
     armors_dict = track_armor(img, val, mode)  # 跟踪装甲
