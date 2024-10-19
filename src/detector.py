@@ -88,7 +88,7 @@ def find_light(img_binary, img, mode):
 
     return lights_red, lights_blue, img_drawn  # 返回红色和蓝色光源
 
-def is_close(rect1, rect2, light_tol, angle_tol, height_tol, width_tol,cy_tol):
+def is_close(rect1, rect2, light_angle_tol, line_angle_tol, height_tol, width_tol,cy_tol):
     """检查两个灯条(旋转矩形)是否足够相似。辅助函数"""
     (cx1, cy1), (w1, h1), angle1 = rect1  # 获取第一个旋转矩形的信息
     (cx2, cy2), (w2, h2), angle2 = rect2  # 获取第二个旋转矩形的信息
@@ -96,7 +96,7 @@ def is_close(rect1, rect2, light_tol, angle_tol, height_tol, width_tol,cy_tol):
     
     if distance > 20 :    # 首先判断距离是否大于20
         angle_diff = min(abs(angle1 - angle2), 360 - abs(angle1 - angle2))  # 计算角度差 # 判断旋转矩形的角度是否接近
-        if angle_diff <= light_tol:  # 判断角度差是否在容忍范围内
+        if angle_diff <= light_angle_tol:  # 判断角度差是否在容忍范围内
             if abs(h1 - h2) <= height_tol and abs(w1 - w2) <= width_tol:  # 判断高宽差
                 line_angle = math.degrees(math.atan2(cy2 - cy1, cx2 - cx1))  # 计算连线角度
                 # 将角度标准化到 -90° 到 90° 之间
@@ -105,11 +105,11 @@ def is_close(rect1, rect2, light_tol, angle_tol, height_tol, width_tol,cy_tol):
                 elif line_angle < -90:
                     line_angle += 180  # 标准化处理
                 # 检查是否垂直或者判断中心点垂直坐标差  
-                if (abs(line_angle - angle1) <= angle_tol or abs(line_angle - angle2) <= angle_tol or abs(cy1-cy2)<cy_tol):  
+                if (abs(line_angle - angle1) <= line_angle_tol or abs(line_angle - angle2) <= line_angle_tol or abs(cy1-cy2)<cy_tol):  
                     return True                
     return False
 
-def is_armor(lights, light_tol=5, angle_tol=7, height_tol=10, width_tol=10,cy_tol=5):
+def is_armor(lights, light_angle_tol=5, line_angle_tol=7, height_tol=10, width_tol=10,cy_tol=5):
     """匹配灯条，找装甲板"""
     lights_matched = []  # 存放匹配的光源组
     processed_indices = set()  # 用于存储已处理的矩形索引
@@ -120,7 +120,7 @@ def is_armor(lights, light_tol=5, angle_tol=7, height_tol=10, width_tol=10,cy_to
             continue
         
         light1 = lights[i]  # 取出当前矩形
-        close_lights = [j for j in range(lights_count) if j != i and is_close(light1, lights[j], light_tol, angle_tol, height_tol, width_tol,cy_tol)]  # 找到接近的光源
+        close_lights = [j for j in range(lights_count) if j != i and is_close(light1, lights[j], light_angle_tol, line_angle_tol, height_tol, width_tol,cy_tol)]  # 找到接近的光源
         
         if close_lights:  # 如果找到接近的矩形
             group = [light1] + [lights[j] for j in close_lights]  # 将当前矩形和接近的矩形组合成一组
