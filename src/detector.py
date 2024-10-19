@@ -192,3 +192,4 @@ if __name__ == "__main__":
     armors_dict = track_armor(img, val, mode)  # 跟踪装甲
     print(armors_dict)  # 打印装甲字典
     cv2.waitKey(0)  # 等待按键
+    cv2.destroyAllWindows()
