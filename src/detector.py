@@ -127,7 +127,7 @@ def is_armor(lights, light_angle_tol=5, line_angle_tol=7, height_tol=10, width_t
             lights_matched.append(group)  # 将当前组添加到所有组中
             processed_indices.update([i] + close_lights)# 将已处理的矩形索引添加到 processed_indices 中
 
-    armor = []  # 存放装甲信息
+    armors = []  # 存放装甲信息
     for light_matched in lights_matched:  # 遍历所有装甲组
         if light_matched:  # 如果组不为空
             points = np.concatenate([cv2.boxPoints(light) for light in light_matched])  # 获取所有矩形的四个顶点
@@ -136,8 +136,8 @@ def is_armor(lights, light_angle_tol=5, line_angle_tol=7, height_tol=10, width_t
             if 200 <= armor_raw[1][0] * armor_raw[1][1] <= 11000 : # 限制识别到的装甲板面积大小
                 armor_flit = adjust(armor_raw)
                 if 1 <= armor_flit[1][1] / armor_flit[1][0] <= 3.5:  # 限制识别到的装甲矩形高宽比
-                    armor.append(adjust(armor_flit)) # 调整并添加到装甲矩形列表   
-    return armor  # 返回装甲信息
+                    armors.append(adjust(armor_flit)) # 调整并添加到装甲矩形列表   
+    return armors  # 返回装甲信息
 
 def id_armor(img, armors, class_id, mode):
     """为装甲矩形标记信息并在图像上绘制轮廓。"""
