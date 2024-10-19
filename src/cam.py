@@ -16,15 +16,14 @@ def get_first_available_camera():
         cap = cv2.VideoCapture(i)
         if cap.isOpened():
             cap.release()
-            return 0
+            return i
     return None  # 没有可用摄像头
 
 def main():
-    global val
+
     camera_index = get_first_available_camera()  # 获取可用摄像头
     if camera_index is None:
         print("错误: 没有找到可用的摄像头。")
-        return
     
     if video:
         camera_index = url
