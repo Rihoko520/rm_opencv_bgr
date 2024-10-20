@@ -3,10 +3,11 @@ from detector import track_armor
 import adjust  # 导入调试代码
 
 global mode, image_path, url, val, video
-mode = 0  # 模式设置 0: 视频流调试 1: 仅运行检测 2: 仅运行检测-无图 3: 静态图调试
-video = True # 是否识别视频
-url = "./photo/test.mp4"
-image_path = './photo/red_2.jpg'  # 图像路径
+mode = 3  # 模式设置 0: 视频流调试 1: 仅运行检测 2: 仅运行检测-无图 3: 静态图调试
+video = False # 是否识别视频
+url = ""
+#url = "./photo/test.mp4"
+image_path = './photo/hell.jpg'  # 图像路径
 val = 35  # 静态值
 
 def get_first_available_camera():

@@ -77,14 +77,14 @@ def find_light(img_binary, img, mode):
     if mode in [0, 2]:  #根据 mode 绘制识别的光源,绘制蓝色光源
         for rect in lights_blue:
             box = cv2.boxPoints(rect).astype(int)  # 获取轮廓点
-            cv2.drawContours(img_drawn, [box], 0, (255, 0, 0), 2)  # 绘制蓝色轮廓
-            cv2.circle(img_drawn, tuple(map(int, rect[0])), 3, (255, 0, 0), -1)  # 绘制蓝色中心点
+            cv2.drawContours(img_drawn, [box], 0, (200, 71, 90), 1)  # 绘制紫色轮廓
+            cv2.circle(img_drawn, tuple(map(int, rect[0])), 1, (0, 0, 255), -1)  # 绘制红色中心点
 
     if mode in [1, 2]:  # 绘制红色光源
         for rect in lights_red:
             box = cv2.boxPoints(rect).astype(int)  # 获取轮廓点
-            cv2.drawContours(img_drawn, [box], 0, (0, 0, 255), 2)  # 绘制红色轮廓
-            cv2.circle(img_drawn, tuple(map(int, rect[0])), 3, (0, 0, 255), -1)  # 绘制红色中心点
+            cv2.drawContours(img_drawn, [box], 0, (0, 100, 255), 1)  # 绘制橙色轮廓
+            cv2.circle(img_drawn, tuple(map(int, rect[0])), 3, (255, 0, 0), -1)  # 绘制蓝色中心点
 
     return lights_red, lights_blue, img_drawn  # 返回红色和蓝色光源
 
