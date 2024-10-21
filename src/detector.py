@@ -64,7 +64,7 @@ def find_light(img_binary, img, mode):
         box = cv2.boxPoints(rect).astype(int)  # 获取旋转矩形的四个点
         mask = np.zeros(img_binary.shape, dtype=np.uint8)  # 创建掩膜
         cv2.drawContours(mask, [box], -1, 255, -1)  # 在掩膜上绘制轮廓
-        masked_img = cv2.bitwise_and(img, img, mask=mask)  # 按掩膜提取区域
+        masked_img = cv2.bitwise_and(img, img, mask=mask)  # 按掩膜提取区域 按位与
         sum_r, sum_b = np.sum(masked_img[:, :, 2]), np.sum(masked_img[:, :, 0])  # 计算红色和蓝色的总和
 
         if mode == 0 and sum_b > sum_r:       # 根据 mode 识别颜色
